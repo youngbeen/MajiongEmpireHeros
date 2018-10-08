@@ -210,7 +210,7 @@ export default {
     },
     show (params) {
       this.skillId = params.skillId || ''
-      // TODO
+      // TODO 处理不需要选择目标的技能
       if (this.skillId === 'C2') {
         // 守备技能
         gameCtrl.proceedSkill(this.skillId)

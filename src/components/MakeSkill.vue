@@ -108,6 +108,14 @@ export default {
 
   methods: {
     handleSkillCast (item) {
+      if (this.sp < item.spCost) {
+        this.$notify({
+          // title: '警告',
+          type: 'warning',
+          message: `SP值不足！`
+        })
+        return false
+      }
       eventBus.$emit('chooseTarget', {
         skillId: item.id
       })

@@ -209,7 +209,7 @@ export default {
       targetLimit: 0,
       cnName: '守备',
       desc: [],
-      detail: '采用防守戒备的行动，可以恢复少量(1)生命值',
+      detail: '采用防守戒备的行动',
       url: './img/skill_2_zs.png'
     },
     {

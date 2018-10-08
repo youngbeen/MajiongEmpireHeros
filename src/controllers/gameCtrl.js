@@ -224,11 +224,14 @@ export default {
   // 处理技能
   proceedSkill (skillId = '', targets = []) {
     switch (skillId) {
-      case 'C1': // 战士普攻
+      case 'C1': // ZS普攻
         ZSCtrl.atk(targets)
         break
-      case 'C2': // 战士守备
+      case 'C2': // 守备
         commonCtrl.guard()
+        break
+      case 'ZS1': // 冲锋
+        ZSCtrl.charge(skillId, targets)
         break
       default:
         // TODO

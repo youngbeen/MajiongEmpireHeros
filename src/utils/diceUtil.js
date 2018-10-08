@@ -1,3 +1,4 @@
+import config from '../models/config'
 
 export default {
   // 获取伤害倍数
@@ -7,19 +8,19 @@ export default {
       case 1:
       case 2:
         return {
-          times: 0.8,
+          times: config.slightTimes,
           dice
         }
       case 3:
       case 4:
       case 5:
         return {
-          times: 1,
+          times: config.normalTimes,
           dice
         }
       case 6:
         return {
-          times: 1.4,
+          times: config.criticalTimes,
           dice
         }
     }
