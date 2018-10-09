@@ -2,6 +2,7 @@ import eventBus from '../EventBus'
 import heroDict from '../models/heroDict'
 import hero from '../models/hero'
 import system from '../models/system'
+import config from '../models/config'
 import commonCtrl from './skill/commonCtrl'
 import ZSCtrl from './skill/ZSCtrl'
 import LRCtrl from './skill/LRCtrl'
@@ -162,8 +163,8 @@ export default {
       // 无可行动角色，回合结束，重新开始新回合
       this.refreshActionFlag()
       this.gainSp()
-      // //清除debuff TODO
-      // data.runBuffs();
+      // 清除debuff
+      this.runBuffs()
       system.turn = system.firstHand
 
       // eventBus.$emit('playSound', {
@@ -300,6 +301,99 @@ export default {
       }
       return item
     })
+  },
+  // 结算回合结束时的技能，buff等
+  runBuffs () {
+    hero.units = hero.units.map((item) => {
+      // 清除眩晕
+      item.flagFaint = false
+      // 清除减速
+      if (item.flagSlow) {
+        item.speed += config.magicShotMinusSpeed
+        item.flagSlow = false
+      }
+      // 结算中毒 TODO
+      // //中毒效果
+      // if (data.unit[i].poison > 0) {
+      //   data.unit[i].poison--;
+      //   if (data.unit[i].hp > 0) {
+      //     data.unit[i].hp -= 3;
+      //     data.unit[i].hp < 0 ? data.unit[i].hp = 0 : data.unit[i].hp;
+      //     var t = setTimeout('painter.makeAttack(' + i + ', 3, "static/audio/poison.wav", "static/img/effdampoison.png");', 100);
+      //     $("div.history-content").prepend("<p class='history-item'>" + (i + 1) + "号单位受到了3点毒药伤害</p>");
+      //   };
+      // };
+      // //清除ms强化效果
+      // if (data.unit[i].cat == 10 && data.unit[i].hp == 0) {
+      //   for (j = 0; j < 10; j++) {
+      //     if (data.unit[j].enhanceflag == true && data.unit[j].hp > 0) {
+      //       data.unit[j].enhanceflag = false;
+      //       data.unit[j].hp -= 3;
+      //       data.unit[j].hp < 1 ? data.unit[j].hp = 1 : data.unit[j].hp;
+      //     };
+      //   };
+      //   $("div.history-content").prepend("<p class='history-item'>强化效果消失</p>");
+      // };
+      // //清除YY效果
+      // if (data.unit[i].yy > 0 && data.unit[i].hp > 0) {
+      //   data.unit[i].yy--;
+      //   if (data.unit[i].yy == 0) {
+      //     data.unit[i].maxhp -= 2;
+      //     data.unit[i].hp -= 2;
+      //     data.unit[i].hp < 1 ? data.unit[i].hp = 1 : data.unit[i].hp;
+      //     data.unit[i].speed -= 2;
+      //   };
+      // };
+      // //树形态回血
+      // if (data.unit[i].treeflag == true && data.unit[i].hp > 0) {
+      //   var x;
+      //   i > 4 ? x = 5 : x = 0;
+      //   for (j = 0; j < 5; j++) {
+      //     if (data.unit[j + x].hp > 0) {
+      //       data.unit[j + x].hp++;
+      //       data.unit[j + x].hp > data.unit[j + x].maxhp ? data.unit[j + x].hp = data.unit[j + x].maxhp : data.unit[j + x].hp;
+      //       // painter.makeHeal(j+x, 1, "static/audio/heal.wav");
+      //     };
+      //   };
+      //   $("div.history-content").prepend("<p class='history-item'>德鲁伊树形态为所有队友回复了生命值</p>");
+      // };
+      // //清除蛊惑效果
+      // data.unit[i].confuse > 0 ? data.unit[i].confuse-- : data.unit[i].confuse;
+      // //清除醉酒效果
+      // data.unit[i].drunkflag == true && controller.rollDice(5) == 5 ? data.unit[i].drunkflag = false : data.unit[i].drunkflag;
+      // //清除园丁 致命藤蔓
+      // if (data.unit[i].cat == 14 && data.unit[i].hp == 0) {
+      //   for (j = 0; j < 10; j++) {
+      //     data.unit[j].bindflag = false;
+      //   };
+      //   $("div.history-content").prepend("<p class='history-item'>致命藤蔓效果消失了</p>");
+      // };
+      return item
+    })
+
+    // //执行 致命藤蔓
+    // for (i = 0; i < 10; i++) {
+    //   if (data.unit[i].bindflag == true && data.unit[i].hp > 0) {
+    //     if (controller.rollDice(2) == 2) {
+    //       data.unit[i].hp -= 2;
+    //       data.unit[i].hp < 0 ? data.unit[i].hp = 0 : data.unit[i].hp;
+    //       var t = setTimeout('painter.makeAttack(' + i + ', 2, "static/audio/bind.wav", "static/img/effdamtree.png");', 100);
+    //       $("div.history-content").prepend("<p class='history-item'>致命藤蔓对" + (i + 1) + "号单位造成2点自然伤害</p>");
+    //     };
+    //   };
+    // };
+
+    // //清除寒冰屏障
+    // if (controller.ibNum > 0) {
+    //   controller.ibNum++;
+    //   if (controller.ibNum > 3) {
+    //     controller.ibNum = 0;
+    //     for (i = 0; i < 10; i++) {
+    //       data.unit[i].iceblockflag = false;
+    //     };
+    //     $("div.history-content").prepend("<p class='history-item'>寒冰屏障效果消失了</p>");
+    //   };
+    // };
   },
   // 检查胜利
   checkWin () {

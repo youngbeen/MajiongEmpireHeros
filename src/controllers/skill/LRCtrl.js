@@ -114,7 +114,7 @@ export default {
         // 有效单位
         if (system.unitIndex > 4 && index < 5) {
           targets.push(index)
-        } else if (index > 4) {
+        } else if (system.unitIndex < 5 && index > 4) {
           targets.push(index)
         }
       }
