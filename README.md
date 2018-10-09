@@ -32,6 +32,7 @@ npm run lint
 | chooseTarget     | { skillId: '' } | 通知展示选择技能目标弹框({ 技能id }) |
 | animateDamage    | { targets: [index], value: '', sound: '', image: '' } | 通知展示伤害特效({ 目标索引，伤害数字值，音效，伤害效果图 }) |
 | animateHeal      | { targets: [index], value: '', sound: '' } | 通知展示治疗特效({ 目标索引，治疗数字值，音效 }) |
+| animateSpRecover | { targets: [index], value: '', sound: '' } | 通知展示SP回复特效({ 目标索引SP回复数字值，音效 }) |
 
 ## SS
 
@@ -42,5 +43,7 @@ npm run lint
 
 ## TODOS
 
-* 消息弹框
 * 战斗记录框
+* 测试LR技能
+* 重置回合的音乐在何时播放？
+* 调整选择目标界面的确定按钮的位置，便于操作

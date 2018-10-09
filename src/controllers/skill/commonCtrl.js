@@ -8,6 +8,7 @@ export default {
   guard () {
     let me = hero.units[system.unitIndex]
     me.isActed = true
+    me.actRounds++
 
     let heal = 1
     if (me.type === 'DK') {

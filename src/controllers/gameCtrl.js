@@ -4,6 +4,9 @@ import hero from '../models/hero'
 import system from '../models/system'
 import commonCtrl from './skill/commonCtrl'
 import ZSCtrl from './skill/ZSCtrl'
+import LRCtrl from './skill/LRCtrl'
+import SMCtrl from './skill/SMCtrl'
+import diceUtil from '../utils/diceUtil'
 
 export default {
   // 设置角色数据
@@ -158,13 +161,14 @@ export default {
     if (speedUp === -99 && speedDown === -99) {
       // 无可行动角色，回合结束，重新开始新回合
       this.refreshActionFlag()
+      this.gainSp()
       // //清除debuff TODO
       // data.runBuffs();
       system.turn = system.firstHand
 
-      eventBus.$emit('playSound', {
-        sound: 'reset'
-      })
+      // eventBus.$emit('playSound', {
+      //   sound: 'reset'
+      // })
       system.msg = ['所有单位已重置！', ...system.msg]
     } else if (speedUp !== -99 && speedDown !== -99) {
       // 都存在未动作单位，比较速度大小及先后手
@@ -227,11 +231,45 @@ export default {
       case 'C1': // ZS普攻
         ZSCtrl.atk(targets)
         break
-      case 'C2': // 守备
-        commonCtrl.guard()
-        break
       case 'ZS1': // 冲锋
-        ZSCtrl.charge(skillId, targets)
+        eventBus.$emit('playSound', {
+          sound: 'charge'
+        })
+        setTimeout(() => {
+          ZSCtrl.charge(skillId, targets)
+        }, 1000)
+        break
+      case 'C3': // LR普攻
+        eventBus.$emit('playSound', {
+          sound: 'castmultishot'
+        })
+        setTimeout(() => {
+          LRCtrl.atk(targets)
+        }, 1000)
+        break
+      case 'LR1': // LR箭雨
+        eventBus.$emit('playSound', {
+          sound: 'castmultishot'
+        })
+        setTimeout(() => {
+          LRCtrl.rain(skillId)
+        }, 1000)
+        break
+      case 'LR2': // LR奥术射击
+        eventBus.$emit('playSound', {
+          sound: 'castmultishot'
+        })
+        setTimeout(() => {
+          LRCtrl.magicShoot(skillId, targets)
+        }, 1000)
+        break
+      case 'C5': // SM普攻
+        SMCtrl.atk(targets)
+        break
+      case 'C2': // ZS守备
+      case 'C4': // LR守备
+      case 'C6': // SM守备
+        commonCtrl.guard()
         break
       default:
         // TODO
@@ -241,6 +279,25 @@ export default {
   refreshActionFlag () {
     hero.units = hero.units.map(item => {
       item.isActed = false
+      return item
+    })
+  },
+  // 获取sp
+  gainSp () {
+    hero.units = hero.units.map((item, index) => {
+      if (item.isOpen && item.type && !item.isDead) {
+        // 存活的有效单位，每回合2/5的概率获得2 sp
+        if (diceUtil.rollDice(5) > 3) {
+          item.sp += 2
+          if (item.sp > item.maxsp) {
+            item.sp = item.maxsp
+          }
+          eventBus.$emit('animateSpRecover', {
+            targets: [index],
+            value: 2
+          })
+        }
+      }
       return item
     })
   },

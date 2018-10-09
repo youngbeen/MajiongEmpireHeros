@@ -54,7 +54,7 @@
             <!-- 显示伤害效果 -->
             <img class="unit-cover cover-effect" v-show="animates[index].isShowEffect" :src="animates[index].effectUrl" />
             <!-- 显示扣血/治疗效果 -->
-            <p class="unit-cover cover-effect-hpminus" :class="{ 'cover-heal': animates[index].textType === 'heal', 'cover-effect-hpminus-active': animates[index].isTextAnimateStart }" v-show="animates[index].isShowText">{{ animates[index].textType === 'heal' ? '+' : '-' }} {{ animates[index].textValue }}</p>
+            <p class="unit-cover cover-effect-hpminus" :class="{ 'cover-heal': animates[index].textType === 'heal', 'cover-sp-recover': animates[index].textType === 'sp', 'cover-effect-hpminus-active': animates[index].isTextAnimateStart }" v-show="animates[index].isShowText">{{ animates[index].textType === 'damage' ? '-' : '+' }} {{ animates[index].textValue }}</p>
           </div>
           <!-- 右侧debuff栏 -->
           <div class="box-debuffs">
@@ -154,7 +154,7 @@
             <!-- 显示伤害效果 -->
             <img class="unit-cover cover-effect" v-show="animates[index + 5].isShowEffect" :src="animates[index + 5].effectUrl" />
             <!-- 显示扣血效果 -->
-            <p class="unit-cover cover-effect-hpminus" :class="{ 'cover-heal': animates[index + 5].textType === 'heal', 'cover-effect-hpminus-active': animates[index + 5].isTextAnimateStart }" v-show="animates[index + 5].isShowText">{{ animates[index + 5].textType === 'heal' ? '+' : '-' }} {{ animates[index + 5].textValue }}</p>
+            <p class="unit-cover cover-effect-hpminus" :class="{ 'cover-heal': animates[index + 5].textType === 'heal', 'cover-sp-recover': animates[index + 5].textType === 'sp', 'cover-effect-hpminus-active': animates[index + 5].isTextAnimateStart }" v-show="animates[index + 5].isShowText">{{ animates[index + 5].textType === 'damage' ? '-' : '+' }} {{ animates[index + 5].textValue }}</p>
           </div>
           <!-- 右侧debuff栏 -->
           <div class="box-debuffs">
@@ -387,6 +387,38 @@ export default {
           this.animates.splice(params.targets[0], 1, copy)
         }, 1200)
       }
+    },
+    handleSpRecoverAnimate (params) {
+      if (params && params.targets && params.targets.length) {
+        let value = params.value || 0
+        let sound = params.sound || 'sprecover'
+
+        eventBus.$emit('playSound', {
+          sound
+        })
+        let effect = {
+          isShowEffect: false,
+          effectUrl: '',
+          isShowText: true,
+          isTextAnimateStart: false, // 是否开始文字动效
+          textType: 'sp',
+          textValue: value
+        }
+        this.animates.splice(params.targets[0], 1, effect)
+        // 文字动效
+        setTimeout(() => {
+          let copy = this.animates[params.targets[0]]
+          copy.isTextAnimateStart = true
+          this.animates.splice(params.targets[0], 1, copy)
+        }, 100)
+        // 清除文字
+        setTimeout(() => {
+          let copy = this.animates[params.targets[0]]
+          copy.isShowText = false
+          copy.isTextAnimateStart = false
+          this.animates.splice(params.targets[0], 1, copy)
+        }, 1200)
+      }
     }
   },
 
@@ -400,6 +432,9 @@ export default {
     })
     eventBus.$on('animateHeal', params => {
       this.handleHealAnimate(params)
+    })
+    eventBus.$on('animateSpRecover', params => {
+      this.handleSpRecoverAnimate(params)
     })
   }
 }
@@ -545,6 +580,9 @@ export default {
             }
             .cover-heal {
               color: rgb(0,176,80);
+            }
+            .cover-sp-recover {
+              color: rgba(255,227,99,1);
             }
             .cover-effect-hpminus-active {
               top: -40px;

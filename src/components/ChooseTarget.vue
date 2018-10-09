@@ -211,8 +211,8 @@ export default {
     show (params) {
       this.skillId = params.skillId || ''
       // TODO 处理不需要选择目标的技能
-      if (this.skillId === 'C2') {
-        // 守备技能
+      if (this.skillId === 'LR1' || this.skillId === 'C2' || this.skillId === 'C4' || this.skillId === 'C6') {
+        // LR箭雨，守备技能
         gameCtrl.proceedSkill(this.skillId)
         this.close()
       } else {
