@@ -7,6 +7,8 @@ import commonCtrl from './skill/commonCtrl'
 import ZSCtrl from './skill/ZSCtrl'
 import LRCtrl from './skill/LRCtrl'
 import SMCtrl from './skill/SMCtrl'
+import WSCtrl from './skill/WSCtrl'
+import DZCtrl from './skill/DZCtrl'
 import diceUtil from '../utils/diceUtil'
 
 export default {
@@ -267,13 +269,27 @@ export default {
       case 'C5': // SM普攻
         SMCtrl.atk(targets)
         break
+      case 'SM1': // SM英勇
+        SMCtrl.brave(skillId)
+        break
+      case 'C7': // WS普攻
+        WSCtrl.atk(targets)
+        break
+      case 'WS1': // WS死亡一指
+        WSCtrl.deathFinger(skillId, targets)
+        break
+      case 'C9': // DZ普攻
+        DZCtrl.atk(targets)
+        break
       case 'C2': // ZS守备
       case 'C4': // LR守备
       case 'C6': // SM守备
+      case 'C8': // WS守备
+      case 'C10': // DZ守备
         commonCtrl.guard()
         break
       default:
-        // TODO
+        // TODO 补全技能
     }
   },
   // 刷新action
@@ -304,25 +320,48 @@ export default {
   },
   // 结算回合结束时的技能，buff等
   runBuffs () {
-    hero.units = hero.units.map((item) => {
-      // 清除眩晕
-      item.flagFaint = false
-      // 清除减速
-      if (item.flagSlow) {
-        item.speed += config.magicShotMinusSpeed
-        item.flagSlow = false
+    hero.units = hero.units.map((item, index) => {
+      if (item.isOpen && item.type && !item.isDead) {
+        // 有效单位
+        // let tc = ''
+        // 清除眩晕
+        item.flagFaint = false
+        // 清除减速
+        if (item.flagSlow) {
+          item.speed += config.magicShotMinusSpeed
+          item.flagSlow = false
+        }
+        // 清除YY效果
+        if (item.yy > 0) {
+          item.yy--
+          if (item.yy === 0) {
+            item.maxhp -= config.yyPlusMaxhp
+            item.hp -= config.yyPlusMaxhp
+            if (item.hp < 1) {
+              item.hp = 1
+            }
+            item.speed -= config.yyPlusSpeed
+          }
+        }
+        // 结算中毒
+        if (item.poison > 0) {
+          item.poison--
+          let poisonDamage = config.poisonDamage
+          item.hp -= poisonDamage
+          if (item.hp <= 0) {
+            item.hp = 0
+            item.isDead = true
+          }
+          // 显示伤害动效
+          eventBus.$emit('animateDamage', {
+            targets: [index],
+            value: poisonDamage,
+            sound: 'poison',
+            image: 'effdampoison'
+          })
+          system.msg = [`${index + 1}号单位受到了${poisonDamage}点毒药伤害`, ...system.msg]
+        }
       }
-      // 结算中毒 TODO
-      // //中毒效果
-      // if (data.unit[i].poison > 0) {
-      //   data.unit[i].poison--;
-      //   if (data.unit[i].hp > 0) {
-      //     data.unit[i].hp -= 3;
-      //     data.unit[i].hp < 0 ? data.unit[i].hp = 0 : data.unit[i].hp;
-      //     var t = setTimeout('painter.makeAttack(' + i + ', 3, "static/audio/poison.wav", "static/img/effdampoison.png");', 100);
-      //     $("div.history-content").prepend("<p class='history-item'>" + (i + 1) + "号单位受到了3点毒药伤害</p>");
-      //   };
-      // };
       // //清除ms强化效果
       // if (data.unit[i].cat == 10 && data.unit[i].hp == 0) {
       //   for (j = 0; j < 10; j++) {
@@ -333,16 +372,6 @@ export default {
       //     };
       //   };
       //   $("div.history-content").prepend("<p class='history-item'>强化效果消失</p>");
-      // };
-      // //清除YY效果
-      // if (data.unit[i].yy > 0 && data.unit[i].hp > 0) {
-      //   data.unit[i].yy--;
-      //   if (data.unit[i].yy == 0) {
-      //     data.unit[i].maxhp -= 2;
-      //     data.unit[i].hp -= 2;
-      //     data.unit[i].hp < 1 ? data.unit[i].hp = 1 : data.unit[i].hp;
-      //     data.unit[i].speed -= 2;
-      //   };
       // };
       // //树形态回血
       // if (data.unit[i].treeflag == true && data.unit[i].hp > 0) {

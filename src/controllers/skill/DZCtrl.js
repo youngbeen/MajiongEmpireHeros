@@ -8,7 +8,7 @@ import heroUtil from '../../utils/heroUtil'
 import reduceCtrl from '../reduceCtrl'
 
 export default {
-  // 普攻
+  // 普攻 TODO
   atk (targets = []) {
     // 只有一目标
     const youIndex = targets[0]

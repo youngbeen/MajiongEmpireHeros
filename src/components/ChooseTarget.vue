@@ -211,20 +211,26 @@ export default {
     show (params) {
       this.skillId = params.skillId || ''
       // TODO 处理不需要选择目标的技能
-      if (this.skillId === 'LR1' || this.skillId === 'C2' || this.skillId === 'C4' || this.skillId === 'C6') {
-        // LR箭雨，守备技能
-        gameCtrl.proceedSkill(this.skillId)
-        this.close()
-      } else {
-        // 其他技能
-        // 根据id匹配技能，获取信息
-        let skillDetail = skillDict.list.find(item => {
-          return item.id === this.skillId
-        })
-        this.skillTargets = skillDetail.targetLimit || 0
-        this.skillName = skillDetail.cnName || ''
-        this.skillImg = skillDetail.url || ''
-        this.isShow = true
+      switch (this.skillId) {
+        case 'LR1': // LR箭雨
+        case 'SM1': // SM英勇
+        case 'C2': // ZS守备
+        case 'C4': // LR守备
+        case 'C6': // SM守备
+        case 'C8': // WS守备
+        case 'C10': // DZ守备
+          gameCtrl.proceedSkill(this.skillId)
+          this.close()
+          break
+        default: // 其他技能
+          // 根据id匹配技能，获取信息
+          let skillDetail = skillDict.list.find(item => {
+            return item.id === this.skillId
+          })
+          this.skillTargets = skillDetail.targetLimit || 0
+          this.skillName = skillDetail.cnName || ''
+          this.skillImg = skillDetail.url || ''
+          this.isShow = true
       }
     },
     close () {

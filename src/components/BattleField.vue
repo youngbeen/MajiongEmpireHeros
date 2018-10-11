@@ -52,7 +52,7 @@
             <p class="unit-cover acted-cover" v-show="!item.isDead && item.isActed">-已行动-</p>
             <p class="unit-cover death-cover" v-show="item.isDead">-死 亡-</p>
             <!-- 显示伤害效果 -->
-            <img class="unit-cover cover-effect" v-show="animates[index].isShowEffect" :src="animates[index].effectUrl" />
+            <img class="cover-effect" v-show="animates[index].isShowEffect" :src="animates[index].effectUrl" />
             <!-- 显示扣血/治疗效果 -->
             <p class="unit-cover cover-effect-hpminus" :class="{ 'cover-heal': animates[index].textType === 'heal', 'cover-sp-recover': animates[index].textType === 'sp', 'cover-effect-hpminus-active': animates[index].isTextAnimateStart }" v-show="animates[index].isShowText">{{ animates[index].textType === 'damage' ? '-' : '+' }} {{ animates[index].textValue }}</p>
           </div>
@@ -152,7 +152,7 @@
             <p class="unit-cover acted-cover" v-show="!item.isDead && item.isActed">-已行动-</p>
             <p class="unit-cover death-cover" v-show="item.isDead">-死 亡-</p>
             <!-- 显示伤害效果 -->
-            <img class="unit-cover cover-effect" v-show="animates[index + 5].isShowEffect" :src="animates[index + 5].effectUrl" />
+            <img class="cover-effect" v-show="animates[index + 5].isShowEffect" :src="animates[index + 5].effectUrl" />
             <!-- 显示扣血效果 -->
             <p class="unit-cover cover-effect-hpminus" :class="{ 'cover-heal': animates[index + 5].textType === 'heal', 'cover-sp-recover': animates[index + 5].textType === 'sp', 'cover-effect-hpminus-active': animates[index + 5].isTextAnimateStart }" v-show="animates[index + 5].isShowText">{{ animates[index + 5].textType === 'damage' ? '-' : '+' }} {{ animates[index + 5].textValue }}</p>
           </div>
@@ -546,6 +546,13 @@ export default {
               top: 0;
               width: 100%;
               height: 100%;
+              z-index: 1;
+            }
+            .cover-effect {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
               z-index: 1;
             }
             .acted-cover {

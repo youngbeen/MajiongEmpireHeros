@@ -2,6 +2,7 @@
 import eventBus from '../../EventBus'
 import hero from '../../models/hero'
 import system from '../../models/system'
+import config from '../../models/config'
 
 export default {
   // 守备
@@ -10,13 +11,13 @@ export default {
     me.isActed = true
     me.actRounds++
 
-    let heal = 1
+    let heal = config.guardBaseHeal
     if (me.type === 'DK') {
-      heal = 0
+      heal = config.guardDKHeal
     } else if (me.type === 'YD') {
-      heal = 3
+      heal += config.guardYDPlusHeal
     } else if (me.iceblock) {
-      heal = 2
+      heal += config.guardIceblockPlusHeal
     }
     me.hp += heal
     if (me.hp > me.maxhp) {

@@ -4,7 +4,7 @@ import config from '../../models/config'
 import hero from '../../models/hero'
 import system from '../../models/system'
 import diceUtil from '../../utils/diceUtil'
-import heroUtil from '../../utils/heroUtil'
+// import heroUtil from '../../utils/heroUtil'
 import reduceCtrl from '../reduceCtrl'
 
 export default {
@@ -68,8 +68,8 @@ export default {
     eventBus.$emit('animateDamage', {
       targets: [youIndex],
       value: damage,
-      sound: 'atksm',
-      image: 'effdamham'
+      sound: 'atkws',
+      image: 'effdamstick'
     })
     system.msg = [`${system.unitIndex + 1}号单位对${youIndex + 1}号单位造成${damage}点伤害`, ...system.msg]
 
@@ -99,45 +99,43 @@ export default {
     hero.units.splice(system.unitIndex, 1, me)
     hero.units.splice(youIndex, 1, you)
   },
-  // 英勇
-  brave (skillId = '', targets = []) {
+  // 死亡一指
+  deathFinger (skillId = '', targets = []) {
     const skill = skillDict.list.find(item => {
       return item.id === skillId
     })
+    // 只有一目标
+    const youIndex = targets[0]
+    let you = hero.units[youIndex]
     let me = hero.units[system.unitIndex]
     me.isActed = true
     me.sp -= skill.spCost
     me.actRounds++
 
-    // 回写数据 NOTE 这里有些特殊，之所以要先回写SM单位的数据是因为后续的英勇效果结算也会变动SM自身的数据，所以需要提前把数据先写入一次
+    // STEP1 计算原始伤害
+    let damage = config.deathFingerMinDamage
+    if (you.hp <= config.deathFingerMaxDamage) {
+      damage = config.deathFingerMaxDamage
+    }
+    // STEP2 结算
+    me.skillDamageTotal += damage
+    me.damageTotal += damage
+    you.hp -= damage
+    if (you.hp <= 0) {
+      you.hp = 0
+      you.isDead = true
+    }
+    // 显示伤害动效
+    eventBus.$emit('animateDamage', {
+      targets: [youIndex],
+      value: damage,
+      sound: 'atkfinger',
+      image: 'effdammagic'
+    })
+    system.msg = [`*死亡一指*对${youIndex + 1}号单位造成${damage}点伤害`, ...system.msg]
+
+    // 回写数据
     hero.units.splice(system.unitIndex, 1, me)
-
-    eventBus.$emit('playSound', {
-      sound: 'yy'
-    })
-
-    // 寻找所有己方有效单位
-    targets = heroUtil.getAllFriends()
-
-    targets.forEach(target => {
-      const youIndex = target
-      let you = hero.units[youIndex]
-
-      // STEP1 结算
-      if (you.yy > 0) {
-        // 已有英勇效果，刷新层数
-        you.yy = config.yyMaxTurns
-      } else {
-        // 没有英勇效果
-        you.yy = config.yyMaxTurns
-        you.maxhp += config.yyPlusMaxhp
-        you.hp += config.yyPlusMaxhp
-        you.speed += config.yyPlusSpeed
-      }
-
-      system.msg = [`萨满释放了*英勇*，所有友方单位最大生命值，速度增加`, ...system.msg]
-
-      hero.units.splice(youIndex, 1, you)
-    })
+    hero.units.splice(youIndex, 1, you)
   }
 }
